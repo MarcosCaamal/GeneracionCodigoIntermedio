@@ -12,8 +12,15 @@ import jdk.nashorn.internal.codegen.CompilerConstants;
 
 public class Evaluador {
     static ArrayList<String> operaciones=new ArrayList();
-     
-
+    static ArrayList<String> numerosReales=new ArrayList();
+   public static void evaluar(String infija){
+        String infijaTemporal=checarDigitosNum(infija);
+        String postfija= convertir(infijaTemporal);
+        System.out.println(infijaTemporal);
+        System.out.println(numerosReales);
+        System.out.println("La expresion postfija es: "+postfija);
+        
+    }
     private static String convertir(String infija) {
         String postfija="";
         Pila pila =new Pila(100);
@@ -68,6 +75,8 @@ public class Evaluador {
         if (operador=='(') return 0;
         return 0;
     }
+    
+
 
     private static boolean esOperador(char letra) {
         if (letra=='^'||letra == '*' || letra=='/' || letra=='+' || 
@@ -96,18 +105,60 @@ public class Evaluador {
              return "T"+i;}
          return "";
     }
+    private static String checarDigitosNum(String infija){
+        String infijaTemporal="";
+        String numero="";
+        int indices=0;
+        for (int i = 0; i < infija.length(); i++) {
+                char letra=infija.charAt(i);
+                if(!esOperador(letra)){
+                    numero+=infija.charAt(i);
+                }
+                else if(letra=='('){
+                        infijaTemporal+=infija.charAt(i);
+                }
+                else if (letra==')'){
+                    infijaTemporal+=String.valueOf(indices);
+                    infijaTemporal+=infija.charAt(i);
+                     Evaluador.numerosReales.add(numero);
+                    indices++;
+                     numero="";
+                } else if(numero!=""){
+                    infijaTemporal+=String.valueOf(indices);
+                    infijaTemporal+=infija.charAt(i);     
+                    Evaluador.numerosReales.add(numero);
+                    numero="";
+                    indices++;
+                }
+                else{
+                    infijaTemporal+=infija.charAt(i);
+                }
+                    
+                    
+        }
+        
+        if(infija.charAt(infija.length()-1)!=')'){
+        infijaTemporal+=String.valueOf(indices);
+        Evaluador.numerosReales.add(numero);
+        }
+        return  infijaTemporal;
+    }
     
     public ArrayList<String> temporales(String infija){
        // ArrayList<String> operaciones=new ArrayList<>();
         Pila pilaTemporales=new Pila(100);
         int indiceTemporal=0;
-        String postfija= convertir(infija);
+        String infijaTemporal=checarDigitosNum(infija);
+        String postfija= convertir(infijaTemporal);
+        int indices=0;
         for (int i = 0; i < postfija.length(); i++) {
             char letra=postfija.charAt(i);
             if (!esOperador(letra)){
                
                 String n=Character.toString(letra);
-                pilaTemporales.apilar(n);
+                String numero=Evaluador.numerosReales.get(indices).toString();
+                pilaTemporales.apilar(numero);
+                indices++;
                 
             }else{
                
@@ -120,6 +171,7 @@ public class Evaluador {
             }
             
         }
+        
         //System.out.println(""+pilaTemporales.desapilar());
         Evaluador.operaciones.add("X = "+pilaTemporales.elementoTope());
         return this.operaciones;

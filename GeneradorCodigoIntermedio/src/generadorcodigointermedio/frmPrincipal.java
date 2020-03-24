@@ -122,9 +122,18 @@ public class frmPrincipal extends javax.swing.JFrame {
 
     @SuppressWarnings("empty-statement")
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
-     
-             
+            /*Evaluador.numerosReales.removeAll(Evaluador.numerosReales); 
+            String infija=this.txtInfija.getText().trim();
+            String infijaPura="";
+            Evaluador codigo=new Evaluador();
+            for (int i = 0; i < infija.length(); i++) {
+                if(infija.charAt(i)!=' ')
+                    infijaPura+=infija.charAt(i);
+            }
+            Evaluador.evaluar(infijaPura);*/
         try{
+            Evaluador.numerosReales.removeAll(Evaluador.numerosReales);
+
             limpiar();
             String infija=this.txtInfija.getText().trim();
             String infijaPura="";
