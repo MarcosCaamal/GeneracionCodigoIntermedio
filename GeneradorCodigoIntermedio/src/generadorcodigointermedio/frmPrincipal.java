@@ -131,7 +131,7 @@ public class frmPrincipal extends javax.swing.JFrame {
                     infijaPura+=infija.charAt(i);
             }
             Evaluador.evaluar(infijaPura);*/
-        try{
+       try{
             Evaluador.numerosReales.removeAll(Evaluador.numerosReales);
 
             limpiar();

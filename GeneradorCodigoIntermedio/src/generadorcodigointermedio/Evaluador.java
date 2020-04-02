@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import jdk.nashorn.internal.codegen.CompilerConstants;
 
 
-
 public class Evaluador {
     static ArrayList<String> operaciones=new ArrayList();
     static ArrayList<String> numerosReales=new ArrayList();
@@ -21,6 +20,8 @@ public class Evaluador {
         System.out.println("La expresion postfija es: "+postfija);
         
     }
+    //Metodo que sirve para convertir la expresion infija introducida a una expresion postfifa
+    //Una expresion postfija tiene la característica de no ser amibigua
     private static String convertir(String infija) {
         String postfija="";
         Pila pila =new Pila(100);
@@ -60,6 +61,7 @@ public class Evaluador {
         }
         return postfija;
     }
+    //Metodo para saber la prioridad de los operadores de la expresion infija
     private static int prioridadEnExpresion(char operador){
         if(operador=='^') return 4;
         if(operador=='*' || operador=='/') return 2;
@@ -68,6 +70,7 @@ public class Evaluador {
         return 0;
     }
     
+    //Metodo para saber la prioridad de los operadores introducidos a la pila
      private static int prioridadEnPila(char operador){
         if(operador=='^') return 3;
         if(operador=='*' || operador=='/') return 2;
@@ -77,7 +80,8 @@ public class Evaluador {
     }
     
 
-
+    //Funcion que nos indica si el caracter de una expresion aritmetica es operador
+     //Retorna true si es un operador y false si no
     private static boolean esOperador(char letra) {
         if (letra=='^'||letra == '*' || letra=='/' || letra=='+' || 
                 letra=='-' || letra=='(' || letra==')'){
@@ -86,10 +90,12 @@ public class Evaluador {
         
         return false;
     }
- 
+    
+   //Metodo que evalua la expresion postfija y devuelve los temporales para generar
+   //El código intermdio de la expresion
     private static String temporal(char letra, String num1, String num2, int i) {
          if(letra=='*'){
-             Evaluador.operaciones.add("T"+i+" = "+num1+" * "+num2);
+             Evaluador.operaciones.add("T"+i+" = "+num1+" * "+num2);//guarda los temporales generados en un arraylist
              return "T"+i;}
          if(letra=='/'){
              Evaluador.operaciones.add("T"+i+" = "+num1+" / "+num2);
@@ -105,47 +111,62 @@ public class Evaluador {
              return "T"+i;}
          return "";
     }
+    
+    //Metodo que nos sirve para checar cuantos digitos tiene un determinado numero 
     private static String checarDigitosNum(String infija){
         String infijaTemporal="";
         String numero="";
         int indices=0;
         for (int i = 0; i < infija.length(); i++) {
-                char letra=infija.charAt(i);
-                if(!esOperador(letra)){
-                    numero+=infija.charAt(i);
-                }
-                else if(letra=='('){
-                        infijaTemporal+=infija.charAt(i);
-                }
-                else if (letra==')'){
+            char letra=infija.charAt(i);
+            if(!esOperador(letra)){
+                numero+=infija.charAt(i);
+            }
+            else if(letra=='('){
+                if(numero!=""){
                     infijaTemporal+=String.valueOf(indices);
-                    infijaTemporal+=infija.charAt(i);
-                     Evaluador.numerosReales.add(numero);
-                    indices++;
-                     numero="";
-                } else if(numero!=""){
-                    infijaTemporal+=String.valueOf(indices);
-                    infijaTemporal+=infija.charAt(i);     
                     Evaluador.numerosReales.add(numero);
                     numero="";
+                    indices++;                            
+                }
+                infijaTemporal+=infija.charAt(i);
+            }
+            else if (letra==')'){
+                    
+                if(numero!=""){
+                    infijaTemporal+=String.valueOf(indices);
+                    infijaTemporal+=infija.charAt(i);
+                    Evaluador.numerosReales.add(numero);
                     indices++;
+                    numero="";
                 }
                 else{
                     infijaTemporal+=infija.charAt(i);
                 }
+            }else if(numero!=""){
+                infijaTemporal+=String.valueOf(indices);
+                infijaTemporal+=infija.charAt(i);     
+                Evaluador.numerosReales.add(numero);
+                numero="";
+                indices++;
+            }
+            else{
+                infijaTemporal+=infija.charAt(i);
+            }
                     
                     
         }
         
-        if(infija.charAt(infija.length()-1)!=')'){
-        infijaTemporal+=String.valueOf(indices);
-        Evaluador.numerosReales.add(numero);
+        if(infija.charAt(infija.length()-1)!=')' && numero!=""){
+            infijaTemporal+=String.valueOf(indices);
+            Evaluador.numerosReales.add(numero);
         }
         return  infijaTemporal;
     }
     
+    //Metodo que recorre la expresion postifija para poder generar sus temporales
+    // y retorna los temporales guardados en el arraylist operaciones
     public ArrayList<String> temporales(String infija){
-       // ArrayList<String> operaciones=new ArrayList<>();
         Pila pilaTemporales=new Pila(100);
         int indiceTemporal=0;
         String infijaTemporal=checarDigitosNum(infija);
@@ -172,9 +193,8 @@ public class Evaluador {
             
         }
         
-        //System.out.println(""+pilaTemporales.desapilar());
-        Evaluador.operaciones.add("X = "+pilaTemporales.elementoTope());
-        return this.operaciones;
+        Evaluador.operaciones.add("X = "+pilaTemporales.elementoTope());//sirve para igualr X al último temporal
+        return this.operaciones;//retorna todos los temporales de la expresion 
     
     }
 }
